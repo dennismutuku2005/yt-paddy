@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Clean Flat Emerald Squircle -->
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="#10B981"/>
+  
+  <!-- Clean Fast-Forward Chevrons / Triangles (No Lightning / No Flash) -->
+  <g transform="translate(64, 64) scale(0.95)">
+    <polygon points="-24,-24 4,0 -24,24" fill="#FFFFFF"/>
+    <polygon points="-2,-24 26,0 -2,24" fill="#FFFFFF"/>
+  </g>
+</svg>

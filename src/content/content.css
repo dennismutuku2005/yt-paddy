@@ -1,0 +1,20 @@
+/**
+ * ============================================================================
+ * YouTube-Paddy (Educational Concept) — Content Styling
+ * ============================================================================
+ * 
+ * Minimalist, high-performance declarative CSS rules.
+ * 
+ * Design Philosophy:
+ *  - Suppresses in-video ad overlays and message containers purely inside the player.
+ *  - Avoids homepage virtual scroller elements to prevent Polymer layout recalculation freezes.
+ * 
+ * ============================================================================
+ */
+
+/* In-player overlay banners and sponsored message popups */
+.ytp-ad-overlay-container,
+.ytp-ad-message-container,
+.ytp-ad-overlay-slot {
+  display: none !important;
+}
