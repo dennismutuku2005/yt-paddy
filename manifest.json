@@ -18,6 +18,7 @@
         "*://*.youtube.com/*"
       ],
       "js": [
+        "config/version.js",
         "src/content/content.js"
       ],
       "css": [

@@ -65,6 +65,9 @@ YouTube-Paddy implements four primary automation patterns to study web developme
 ```
 yt-paddy/
 ├── manifest.json            # Manifest V3 Extension specification
+├── config/
+│   ├── version.json         # Centralized JSON version configuration
+│   └── version.js           # Single source of truth config module
 ├── icons/
 │   ├── icon.svg             # Vector master icon
 │   ├── icon16.png           # 16x16 toolbar icon
@@ -93,7 +96,7 @@ yt-paddy/
    - Toggle the **Developer mode** switch in the top right corner.
 3. **Load the Extension**:
    - Click the **Load unpacked** button in the top left.
-   - Select this folder: `c:\Users\DENNISMUTUKU\Desktop\yt-paddy`
+   - Select this folder: `......`
 4. **Test on YouTube**:
    - Open [YouTube](https://www.youtube.com/) and play any video.
    - Click the **YouTube-Paddy** icon in your browser toolbar to toggle individual features and inspect real-time analytics (Ads Skipped & Time Saved).
@@ -111,4 +114,4 @@ yt-paddy/
 
 ## Educational Disclaimer
 
-*This project is developed strictly for **educational, academic, and research purposes** to demonstrate client-side DOM mutation handling, synthetic event propagation, and the HTML5 Media APIs in modern browser extension environments.*
+*This project is developed strictly for **educational, academic, and research purposes** to demonstrate client-side DOM mutation handling, synthetic event propagation and the HTML5 Media APIs in modern browser extension environments.*

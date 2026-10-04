@@ -320,5 +320,6 @@
   // Initialize stored settings on script boot
   loadSettings();
 
-  console.log('[YouTube-Paddy] v1.0.1 engine initialized successfully.');
+  const ver = (typeof PADDY_CONFIG !== 'undefined' && PADDY_CONFIG.version) ? PADDY_CONFIG.version : '1.0.1';
+  console.log(`[YouTube-Paddy] v${ver} engine initialized successfully.`);
 })();

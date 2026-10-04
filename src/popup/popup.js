@@ -29,9 +29,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     hideBanners: document.getElementById('hideBannersToggle')
   };
 
-  const adsSkippedVal = document.getElementById('adsSkippedVal');
-  const timeSavedVal = document.getElementById('timeSavedVal');
-  const resetStatsBtn = document.getElementById('resetStatsBtn');
+  const versionText = document.getElementById('versionText');
+  const appVer = (typeof PADDY_CONFIG !== 'undefined' && PADDY_CONFIG.version) 
+    ? PADDY_CONFIG.version 
+    : (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.0.1');
+  const appCodename = (typeof PADDY_CONFIG !== 'undefined' && PADDY_CONFIG.codename)
+    ? PADDY_CONFIG.codename
+    : 'Automation Engine';
+
+  if (versionText) {
+    versionText.textContent = `v${appVer} • ${appCodename}`;
+  }
 
   /**
    * Time Formatter:

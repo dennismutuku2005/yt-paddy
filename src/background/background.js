@@ -12,6 +12,10 @@
  * ============================================================================
  */
 
+try {
+  importScripts('../../config/version.js');
+} catch (e) {}
+
 /**
  * Default configuration schema stored in chrome.storage.local
  */
