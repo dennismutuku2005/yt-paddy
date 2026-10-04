@@ -1,21 +1,13 @@
 /**
  * ============================================================================
- * YouTube-Paddy (Educational Concept) — Version 1.0.1
+ * YouTube-Paddy (Educational Concept) — Ultra-Fast Instant Skip Engine
  * ============================================================================
  * 
- * An educational Chrome/Chromium Manifest V3 content script demonstrating
- * programmatic control of the HTML5 Media API and DOM manipulation on YouTube.
- * 
- * Core Architectural Modules:
- *  1. Auto-Skip Action: Programmatically clicks skip buttons the millisecond they appear.
- *  2. Ad-Muting Trigger: Silences audio during commercial interruptions and seamlessly
- *     restores the user's prior volume/unmuted state when content resumes.
- *  3. Playback Acceleration: Accelerates unskippable ads to 16.0x playback speed,
- *     compressing a 15-second ad into under a second.
- *  4. Smooth Timeline Advance: Advances playhead safely without draining MediaSource
- *     buffers or producing black decoding screens.
- *  5. Multi-Ad Telemetry: Generates distinct signatures for consecutive commercials
- *     (e.g., "Ad 1 of 2", "Ad 2 of 2") to accurately count every skipped segment.
+ * Instantaneous (0ms) DOM & HTML5 Media API Ad Bypass Engine:
+ *  - Microsecond reactive MutationObserver on #movie_player
+ *  - High-frequency (30ms) backup poll loop
+ *  - Instant zero-latency mute & timeline completion
+ *  - Synthetic pointer + click event dispatching on all skip elements
  * 
  * ============================================================================
  */
@@ -23,42 +15,25 @@
 (function () {
   'use strict';
 
-  /**
-   * Singleton guard: Prevent duplicate content script execution if injected
-   * multiple times during single-page application (SPA) lifecycle transitions.
-   */
-  if (window.__PADDY_CORE_RUNNING__) return;
-  window.__PADDY_CORE_RUNNING__ = true;
+  if (window.__PADDY_FAST_ENGINE__) return;
+  window.__PADDY_FAST_ENGINE__ = true;
 
-  /**
-   * Global configuration state.
-   * Default values are automatically synchronized with Chrome's extension storage.
-   */
+  // Configuration
   let config = {
-    enabled: true,         // Master kill-switch
-    autoSkip: true,        // Automatically click skip buttons
-    autoMute: true,        // Mute video audio during commercials
-    playbackSpeed: true,   // Accelerate playback to 16.0x
-    timeJump: true,        // Advance playback timeline safely
-    hideBanners: true      // Clean in-player promo slots
+    enabled: true,
+    autoSkip: true,
+    autoMute: true,
+    playbackSpeed: true,
+    timeJump: true,
+    hideBanners: true
   };
 
-  /**
-   * Internal state management:
-   *  - isAdActive: Boolean tracking whether an ad is currently interrupting playback.
-   *  - currentAdId: Unique signature of the current ad segment to detect consecutive ads.
-   *  - savedMuted: Captures the user's original mute preference before ad muting starts.
-   *  - savedRate: Captures the user's preferred playback speed (e.g. 1.0x, 1.25x, 2.0x).
-   */
+  // State
   let isAdActive = false;
   let currentAdId = null;
   let savedMuted = false;
   let savedRate = 1.0;
 
-  /**
-   * Selectors targeting various generations of YouTube skip ad buttons:
-   * Supports modern Web Component buttons, legacy desktop slots, and container wrappers.
-   */
   const SKIP_SELECTORS = [
     '.ytp-skip-ad-button',
     '.ytp-ad-skip-button',
@@ -67,16 +42,12 @@
     'button.ytp-ad-skip-button-modern',
     '[id^="skip-button:"] button',
     '.ytp-ad-skip-button-container button',
-    'button[class*="ytp-ad-skip"]'
+    'button[class*="ytp-ad-skip"]',
+    '.ytp-ad-overlay-close-button',
+    '.ytp-ad-text.ytp-ad-preview-text'
   ];
 
-  /**
-   * ==========================================================================
-   * Storage & Configuration Synchronization
-   * ==========================================================================
-   * Retrieves saved user preferences from chrome.storage.local on startup,
-   * and listens for real-time changes triggered from the popup interface.
-   */
+  // Load and sync settings
   function loadSettings() {
     try {
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
@@ -84,15 +55,9 @@
           if (res) config = { ...config, ...res };
         });
       }
-    } catch (e) {
-      // Storage access may fail if extension context is invalidated
-    }
+    } catch (e) {}
   }
 
-  /**
-   * Real-time listener for popup toggle updates.
-   * Allows users to turn features ON/OFF dynamically without reloading YouTube.
-   */
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.onChanged) {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local') {
@@ -103,15 +68,7 @@
     });
   }
 
-  /**
-   * ==========================================================================
-   * Telemetry & Analytics Dispatcher
-   * ==========================================================================
-   * Sends structured messages to the background service worker whenever an
-   * ad is skipped or compressed, incrementing badge counts and saved time.
-   * 
-   * @param {number} durationSec - Estimated duration of the bypassed ad in seconds.
-   */
+  // Telemetry: increment skipped counter and compute saved time
   function recordAdSkipped(durationSec) {
     const validDuration = (durationSec && isFinite(durationSec) && durationSec > 0 && durationSec < 600)
       ? Math.round(durationSec)
@@ -124,24 +81,11 @@
           duration: validDuration
         });
       }
-    } catch (e) {
-      // Background worker might be sleeping or context refreshed
-    }
+    } catch (e) {}
   }
 
   /**
-   * ==========================================================================
-   * Ad Signature Generator
-   * ==========================================================================
-   * YouTube frequently chains two or more ads consecutively ("Ad 1 of 2", "Ad 2 of 2")
-   * without removing the '.ad-showing' class between them.
-   * 
-   * This function generates a composite hash from the badge text, video duration,
-   * and video stream source URL to uniquely identify consecutive commercial blocks.
-   * 
-   * @param {HTMLElement} player - YouTube player container element (#movie_player).
-   * @param {HTMLMediaElement} video - HTML5 video element (.html5-main-video).
-   * @returns {string} Unique signature string for the current ad segment.
+   * Generates a unique signature for consecutive commercials
    */
   function getAdSignature(player, video) {
     const adTextEl = player.querySelector('.ytp-ad-text, .ytp-ad-preview-text, .ytp-ad-simple-ad-badge');
@@ -152,49 +96,37 @@
   }
 
   /**
-   * ==========================================================================
-   * Core Video Engine Automation Loop
-   * ==========================================================================
-   * Main evaluation routine executed periodically.
-   * Inspects the YouTube player DOM and executes non-blocking Media API actions.
+   * Dispatches synthetic pointer & click events for instant response
+   */
+  function clickButton(btn) {
+    if (!btn) return;
+    try {
+      const events = ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'];
+      for (let i = 0; i < events.length; i++) {
+        btn.dispatchEvent(new MouseEvent(events[i], { bubbles: true, cancelable: true, view: window }));
+      }
+      if (typeof btn.click === 'function') btn.click();
+    } catch (e) {}
+  }
+
+  /**
+   * Instantaneous Ad Bypass Processing Routine
    */
   function processPlayer() {
-    // If master switch is disabled, skip processing
     if (!config.enabled) return;
-
-    /**
-     * Page Route Optimization:
-     * Only execute player checks when actively viewing a video (Watch pages, Shorts, or Embeds).
-     * Bypasses homepage and search feeds to guarantee 0% CPU footprint and no virtual scroller lag.
-     */
-    const isWatch = window.location.pathname.startsWith('/watch') || 
-                    window.location.pathname.startsWith('/shorts') ||
-                    window.location.pathname.startsWith('/embed');
-    
-    if (!isWatch) return;
 
     const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
     const video = document.querySelector('video.html5-main-video') || document.querySelector('video');
 
     if (!player || !video) return;
 
-    /**
-     * Strict Ad State Detection:
-     * YouTube applies '.ad-showing' or '.ad-interrupting' to the player container
-     * whenever an in-stream video ad is active.
-     */
+    // Strict ad-showing check
     const isAd = player.classList.contains('ad-showing') || player.classList.contains('ad-interrupting');
 
     if (isAd) {
       const adSignature = getAdSignature(player, video);
 
-      /**
-       * State Initialization for New Ad Segment:
-       * When a new ad or consecutive commercial begins:
-       *  - Cache the user's current volume and unmuted preference.
-       *  - Cache the user's custom playback rate (e.g. 1.25x).
-       *  - Send analytics telemetry to increment stats.
-       */
+      // New ad detected in stream
       if (!isAdActive || currentAdId !== adSignature) {
         isAdActive = true;
         currentAdId = adSignature;
@@ -206,100 +138,58 @@
         recordAdSkipped(video.duration);
       }
 
-      /**
-       * ----------------------------------------------------------------------
-       * Feature 1: Ad-Muting Trigger
-       * ----------------------------------------------------------------------
-       * Programmatically silences the HTMLMediaElement during the ad block.
-       */
+      // 1. Instant Auto-Mute (0ms audio silencing)
       if (config.autoMute && !video.muted) {
         video.muted = true;
       }
 
-      /**
-       * ----------------------------------------------------------------------
-       * Feature 2: Playback Acceleration (16.0x Speed)
-       * ----------------------------------------------------------------------
-       * Overrides the media clock rate to 16.0x.
-       * Compresses unskippable 15-second ads into less than a second smoothly
-       * without decoder stall or black frames.
-       */
+      // 2. Instant Playback Acceleration (16.0x Speed)
       if (config.playbackSpeed && video.playbackRate !== 16.0) {
         try {
           video.playbackRate = 16.0;
-        } catch (e) {
-          // Some video streams clamp playback rate
-        }
+        } catch (e) {}
       }
 
-      /**
-       * ----------------------------------------------------------------------
-       * Feature 3: Auto-Skip Action
-       * ----------------------------------------------------------------------
-       * Scans for rendered "Skip Ad" buttons and triggers native click events.
-       */
+      // 3. Instant Timeline Leap to End of Commercial
+      if (config.timeJump && isFinite(video.duration) && video.duration > 0) {
+        try {
+          video.currentTime = video.duration;
+        } catch (e) {}
+      }
+
+      // 4. Instant Click on any Rendered Skip Button
       if (config.autoSkip) {
         for (let i = 0; i < SKIP_SELECTORS.length; i++) {
           const btn = player.querySelector(SKIP_SELECTORS[i]);
           if (btn && btn.offsetParent !== null) {
-            btn.click();
+            clickButton(btn);
             break;
           }
         }
       }
 
-      /**
-       * ----------------------------------------------------------------------
-       * Feature 4: Smooth Timeline Advance
-       * ----------------------------------------------------------------------
-       * Safely advances the playhead towards the final frame.
-       * Leaves a 0.1s buffer margin to avoid MediaSource EOF buffer drain
-       * which would otherwise cause black screens and endless buffering.
-       */
-      if (config.timeJump && isFinite(video.duration) && video.duration > 0 && video.duration < 300) {
-        if (video.currentTime < video.duration - 0.5) {
-          try {
-            video.currentTime = video.duration - 0.1;
-          } catch (e) {
-            // Ignored if stream is write-protected
-          }
-        }
-      }
-
-      /**
-       * Playback Continuity Guard:
-       * Ensures the video element remains in playing state so transitions
-       * do not stall or stay paused.
-       */
+      // Ensure stream continues playing so it exits immediately
       if (video.paused) {
         video.play().catch(() => {});
       }
 
     } else {
-      /**
-       * ======================================================================
-       * Content Restoration Phase (Commercial has ended)
-       * ======================================================================
-       * When the commercial block ends and the main video content resumes:
-       *  - Restores the original unmuted status and volume level.
-       *  - Restores the user's preferred playback speed (e.g. 1.0x).
-       *  - Ensures smooth playback continuation with zero user intervention.
-       */
+      // Main video playback active
       if (isAdActive) {
         isAdActive = false;
         currentAdId = null;
 
-        // Restore original audio preference
+        // Instantly restore user volume
         if (config.autoMute && savedMuted !== undefined) {
           video.muted = savedMuted;
         }
 
-        // Restore original playback rate
+        // Instantly restore normal playback speed
         if (config.playbackSpeed) {
           video.playbackRate = savedRate || 1.0;
         }
 
-        // Resume main video playback if paused during stream switch
+        // Seamless resume
         if (video.paused && video.readyState >= 2) {
           video.play().catch(() => {});
         }
@@ -308,20 +198,45 @@
   }
 
   /**
-   * ==========================================================================
-   * Periodic Engine Loop Initialization
-   * ==========================================================================
-   * Runs the evaluation loop every 150ms.
-   * This frequency ensures instant 0ms ad detection while maintaining
-   * imperceptible CPU utilization.
+   * High-Performance Microsecond Observer Setup
+   * Attaches an immediate MutationObserver to #movie_player to fire the exact millisecond
+   * an ad class is applied.
    */
-  setInterval(processPlayer, 150);
+  function initObserver() {
+    const player = document.getElementById('movie_player') || document.querySelector('.html5-video-player');
+    if (player) {
+      const observer = new MutationObserver(() => {
+        processPlayer();
+      });
+      observer.observe(player, {
+        attributes: true,
+        attributeFilter: ['class']
+      });
+    }
+  }
 
-  // Initialize stored settings on script boot
-  loadSettings();
+  // Ultra-fast 30ms polling loop (instant reaction time)
+  setInterval(processPlayer, 30);
+
+  // Initialize observer
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSettings();
+      initObserver();
+    });
+  } else {
+    loadSettings();
+    initObserver();
+  }
+
+  // Hook navigation
+  window.addEventListener('yt-navigate-finish', () => {
+    initObserver();
+    processPlayer();
+  });
 
   const ver = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest) 
     ? chrome.runtime.getManifest().version 
     : '1.1.1';
-  console.log(`[YouTube-Paddy] v${ver} engine initialized successfully.`);
+  console.log(`[YouTube-Paddy] v${ver} instant engine active.`);
 })();
