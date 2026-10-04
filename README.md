@@ -1,8 +1,14 @@
-# YouTube-Paddy (v1.0.1)
+<p align="center">
+  <img src="icons/icon.svg" width="120" height="120" alt="YouTube-Paddy Logo" />
+</p>
+
+<h1 align="center">YouTube-Paddy (v1.0.1)</h1>
+
+<p align="center">
+  <b>Educational Chrome/Chromium Browser Extension demonstrating DOM Mutation Handling & HTML5 Media API Automation</b>
+</p>
 
 **YouTube-Paddy** is an educational, proof-of-concept Chrome/Chromium browser extension (Manifest V3) designed to demonstrate **browser automation**, **DOM manipulation**, and **HTML5 Video Media API programmatic control**.
-
----
 
 ## Core Educational Architecture
 
@@ -54,8 +60,6 @@ YouTube-Paddy implements four primary automation patterns to study web developme
 * **Technique:** CSS-in-JS Slot Cleansing.
 * **Mechanism:** Hides companion banners, rich item promotional cards, and sponsored overlay containers via optimized declarative CSS rules (`content.css`).
 
----
-
 ## Project Structure
 
 ```
@@ -80,8 +84,6 @@ yt-paddy/
 └── README.md                # Project documentation
 ```
 
----
-
 ## How to Install & Run in Chrome / Brave / Edge
 
 1. **Open Extensions Page**:
@@ -96,8 +98,6 @@ yt-paddy/
    - Open [YouTube](https://www.youtube.com/) and play any video.
    - Click the **YouTube-Paddy** icon in your browser toolbar to toggle individual features and inspect real-time analytics (Ads Skipped & Time Saved).
 
----
-
 ## Configuration Options
 
 | Feature | Default | Description |
@@ -108,8 +108,6 @@ yt-paddy/
 | **Playback Acceleration** | `ON` | Speeds up unskippable ads at 16x |
 | **Timeline Time-Jumping**| `ON` | Leaps playback head straight to the final frame |
 | **Banner Suppression** | `ON` | Suppresses static feed banners and companion ads |
-
----
 
 ## Educational Disclaimer
 
