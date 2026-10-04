@@ -30,15 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   };
 
   const versionText = document.getElementById('versionText');
-  const appVer = (typeof PADDY_CONFIG !== 'undefined' && PADDY_CONFIG.version) 
-    ? PADDY_CONFIG.version 
-    : (chrome.runtime && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.0.1');
-  const appCodename = (typeof PADDY_CONFIG !== 'undefined' && PADDY_CONFIG.codename)
-    ? PADDY_CONFIG.codename
-    : 'Automation Engine';
+  const manifest = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest) 
+    ? chrome.runtime.getManifest() 
+    : { version: '1.1.1' };
 
   if (versionText) {
-    versionText.textContent = `v${appVer} • ${appCodename}`;
+    versionText.textContent = `v${manifest.version} • Automation Engine`;
   }
 
   /**

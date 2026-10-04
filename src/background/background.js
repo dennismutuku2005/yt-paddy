@@ -12,10 +12,6 @@
  * ============================================================================
  */
 
-try {
-  importScripts('../../config/version.js');
-} catch (e) {}
-
 /**
  * Default configuration schema stored in chrome.storage.local
  */
@@ -32,11 +28,6 @@ const DEFAULT_CONFIG = {
   }
 };
 
-/**
- * Installation and Update Lifecycle Handler:
- * Guarantees default configuration schema is saved in persistent local storage
- * without overwriting previously accumulated statistics.
- */
 chrome.runtime.onInstalled.addListener(async (details) => {
   const current = await chrome.storage.local.get(null);
   const updated = { ...DEFAULT_CONFIG, ...current };
@@ -44,7 +35,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     updated.stats = DEFAULT_CONFIG.stats;
   }
   await chrome.storage.local.set(updated);
-  console.log('[YouTube-Paddy] Background service worker initialized with configuration:', updated);
+  const ver = chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.1.1';
+  console.log(`[YouTube-Paddy] Background service worker initialized (v${ver}) with configuration:`, updated);
 });
 
 /**

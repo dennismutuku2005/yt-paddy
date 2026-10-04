@@ -64,10 +64,7 @@ YouTube-Paddy implements four primary automation patterns to study web developme
 
 ```
 yt-paddy/
-├── manifest.json            # Manifest V3 Extension specification
-├── config/
-│   ├── version.json         # Centralized JSON version configuration
-│   └── version.js           # Single source of truth config module
+├── manifest.json            # Manifest V3 Extension specification (Single Source of Truth)
 ├── icons/
 │   ├── icon.svg             # Vector master icon
 │   ├── icon16.png           # 16x16 toolbar icon
