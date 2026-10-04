@@ -2,7 +2,7 @@
   <img src="icons/icon.svg" width="120" height="120" alt="YouTube-Paddy Logo" />
 </p>
 
-<h1 align="center">YouTube-Paddy (v1.0.1)</h1>
+<h1 align="center">YouTube-Paddy (v1.1.1)</h1>
 
 <p align="center">
   <b>Educational Chrome/Chromium Browser Extension demonstrating DOM Mutation Handling & HTML5 Media API Automation</b>

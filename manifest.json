@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube-Paddy",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "Educational browser extension demonstrating DOM manipulation and HTML5 Video Media API automation for YouTube.",
   "permissions": [
     "storage"
