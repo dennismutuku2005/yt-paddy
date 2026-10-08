@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * YouTube-Paddy (Educational Concept) — Background Service Worker
+ * YouTube-Paddy — Background Service Worker
  * ============================================================================
  * 
  * Manifest V3 Service Worker responsible for:
@@ -17,6 +17,7 @@
  */
 const DEFAULT_CONFIG = {
   enabled: true,         // Master enable switch
+  stealthMode: true,     // Stealth & Anti-Adblock Auto-Dismiss
   autoSkip: true,        // Auto-click "Skip Ad"
   autoMute: true,        // Mute video audio during commercials
   playbackSpeed: true,   // Speed up playback to 16x
@@ -35,7 +36,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     updated.stats = DEFAULT_CONFIG.stats;
   }
   await chrome.storage.local.set(updated);
-  const ver = chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.1.1';
+  const ver = chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '1.2.0';
   console.log(`[YouTube-Paddy] Background service worker initialized (v${ver}) with configuration:`, updated);
 });
 

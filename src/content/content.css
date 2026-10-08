@@ -1,20 +1,51 @@
 /**
  * ============================================================================
- * YouTube-Paddy (Educational Concept) — Content Styling
+ * YouTube-Paddy — Stealth Content Styling
  * ============================================================================
  * 
- * Minimalist, high-performance declarative CSS rules.
- * 
- * Design Philosophy:
- *  - Suppresses in-video ad overlays and message containers purely inside the player.
- *  - Avoids homepage virtual scroller elements to prevent Polymer layout recalculation freezes.
+ * Stealth & Anti-Detection CSS:
+ *  - Uses non-destructive geometric suppression (opacity: 0, clip-path) instead
+ *    of display: none on honeypot ad containers to prevent anti-adblock traps.
+ *  - Neutralizes YouTube anti-adblock enforcement dialogs & backdrops instantly.
  * 
  * ============================================================================
  */
 
-/* In-player overlay banners and sponsored message popups */
+/* Stealth suppression of in-player overlay ads & companion banners */
 .ytp-ad-overlay-container,
 .ytp-ad-message-container,
-.ytp-ad-overlay-slot {
+.ytp-ad-overlay-slot,
+.ytp-ad-image-overlay,
+.ytp-ad-text-overlay,
+ytd-action-companion-ad-renderer,
+ytd-display-ad-renderer,
+ytd-promoted-video-renderer,
+ytd-in-feed-ad-layout-renderer,
+#player-ads,
+#panels ytd-ad-slot-renderer,
+ytd-ad-slot-renderer {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  transform: scale(0) !important;
+  clip-path: inset(100%) !important;
+}
+
+/* Anti-Adblock Enforcement Modal Suppression & Unblocking */
+ytd-enforcement-message-view-model,
+tp-yt-paper-dialog:has(ytd-enforcement-message-view-model),
+yt-playability-error-supported-renderers:has(ytd-enforcement-message-view-model) {
   display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Neutralize the backdrop that dims and freezes the page */
+tp-yt-iron-overlay-backdrop:has(~ tp-yt-paper-dialog ytd-enforcement-message-view-model),
+tp-yt-iron-overlay-backdrop.opened:has(~ ytd-popup-container ytd-enforcement-message-view-model) {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
 }

@@ -2,63 +2,59 @@
   <img src="icons/icon.svg" width="120" height="120" alt="YouTube-Paddy Logo" />
 </p>
 
-<h1 align="center">YouTube-Paddy (v1.1.1)</h1>
+<h1 align="center">YouTube-Paddy (v1.2.0)</h1>
 
 <p align="center">
-  <b>Educational Chrome/Chromium Browser Extension demonstrating DOM Mutation Handling & HTML5 Media API Automation</b>
+  <b>Stealth DOM Mutation Handling & HTML5 Media API Automation Engine for YouTube</b>
 </p>
 
-**YouTube-Paddy** is an educational, proof-of-concept Chrome/Chromium browser extension (Manifest V3) designed to demonstrate **browser automation**, **DOM manipulation**, and **HTML5 Video Media API programmatic control**.
+**YouTube-Paddy** is a high-performance, stealth-enabled Chrome/Chromium browser extension (Manifest V3) designed to demonstrate **browser automation**, **DOM manipulation**, **anti-adblock detection bypass**, and **HTML5 Video Media API programmatic control**.
 
-## Core Educational Architecture
+## Core Architecture & Stealth Techniques
 
-YouTube-Paddy implements four primary automation patterns to study web development, script injection, and browser media engine manipulation:
+YouTube-Paddy implements multi-layered automation and evasion patterns:
 
 ```
-                  ┌─────────────────────────────────────┐
-                  │      YouTube-Paddy Engine           │
-                  └──────────────────┬──────────────────┘
-                                     │
-         ┌───────────────────────────┼───────────────────────────┐
-         │                           │                           │
-         ▼                           ▼                           ▼
-┌───────────────────┐       ┌───────────────────┐       ┌───────────────────┐
-│  Auto-Skip Action │       │ Ad-Muting Trigger │       │ 16x Acceleration  │
-│  MutationObserver │       │ HTMLMediaElement  │       │ playbackRate=16.0 │
-│  0ms click trigger│       │ .muted = true     │       │ fast-forward clock│
-└───────────────────┘       └───────────────────┘       └───────────────────┘
-                                     │
-                                     ▼
-                            ┌───────────────────┐
-                            │ Timeline Jumping  │
-                            │ currentTime =     │
-                            │ video.duration    │
-                            └───────────────────┘
+                  ┌─────────────────────────────────────────┐
+                  │      YouTube-Paddy Stealth Engine       │
+                  └────────────────────┬────────────────────┘
+                                       │
+         ┌─────────────────────────────┼─────────────────────────────┐
+         │                             │                             │
+         ▼                             ▼                             ▼
+┌─────────────────────┐       ┌─────────────────────┐       ┌─────────────────────┐
+│ Stealth Auto-Skip   │       │ Ad-Muting Trigger   │       │ 16x Acceleration    │
+│ Humanized Clicks &  │       │ HTMLMediaElement    │       │ playbackRate=16.0   │
+│ Pointer Coordinates │       │ .muted = true       │       │ Fast-forward Clock  │
+└─────────────────────┘       └─────────────────────┘       └─────────────────────┘
+         │                             │                             │
+         ▼                             ▼                             ▼
+┌─────────────────────┐       ┌─────────────────────┐       ┌─────────────────────┐
+│ Safe Timeline Leap  │       │ Anti-Adblock Shield │       │ Stealth CSS Bounds  │
+│ Buffer-Ready Seek   │       │ Auto-Dismiss Modals │       │ Clip-path & Opacity │
+│ Avoids Seek Anomaly │       │ & Auto-Unpause Video│       │ Avoids Bait Traps   │
+└─────────────────────┘       └─────────────────────┘       └─────────────────────┘
 ```
 
-### 1. Auto-Skip Action
-* **Technique:** Continuous DOM Observation & Synthetic Pointer Event Dispatching.
-* **Mechanism:** Listens via `MutationObserver` on the YouTube video container. When a skip button (e.g., `.ytp-skip-ad-button`, `.ytp-ad-skip-button-modern`, `[id^="skip-button:"] button`) mounts in the DOM, it immediately dispatches native mouse sequences (`pointerdown`, `mousedown`, `pointerup`, `mouseup`, `click`) to trigger native ad skipping instantly (0ms latency).
+### 1. Anti-Adblock Shield & Auto-Dismissal
+* **Technique:** Enforcement Dialog Neutralization & Playback Recovery.
+* **Mechanism:** Continuously detects YouTube's `ytd-enforcement-message-view-model` ("Ad blockers violate YouTube Terms of Service") and modal backdrop overlays (`tp-yt-iron-overlay-backdrop`). Automatically triggers dismiss buttons, strips blocking overlays, and unpauses video playback (`player.playVideo()` / `video.play()`).
 
-### 2. Ad-Muting Trigger
-* **Technique:** State Caching & Audio Interception.
-* **Mechanism:** Intercepts when the player enters the `.ad-showing` state, caches the user's volume preference, and sets `video.muted = true`. When the commercial finishes and main video content resumes, it restores the exact prior volume and unmuted state seamlessly.
+### 2. Humanized Stealth Auto-Skip
+* **Technique:** Randomized Multi-Stage Pointer & Mouse Event Synthesis.
+* **Mechanism:** Dispatches `pointerdown`, `mousedown`, `pointerup`, `mouseup`, and `click` with authentic bounding box coordinates (`clientX`, `clientY`) to defeat synthetic event filters (`event.isTrusted` checks). Also integrates native `player.skipAd()` fallback.
 
-### 3. Playback Acceleration
-* **Technique:** HTML5 Media Clock Manipulation.
-* **Mechanism:** For unskippable ads, overrides the browser media clock rate:
-  ```javascript
-  video.playbackRate = 16.0;
-  ```
-  Compresses a 15-second ad into under a second. Listens to `ratechange` events to prevent YouTube's internal player script from resetting playback speed.
+### 3. Non-Intrusive Playback Acceleration
+* **Technique:** HTML5 Media Clock Maximization.
+* **Mechanism:** Speeds up ads to 16.0x speed while keeping audio silently muted (`video.muted = true`). Once the ad concludes, original user playback rate and unmuted volume are restored seamlessly.
 
-### 4. Timeline Time-Jumping
-* **Technique:** `HTMLMediaElement.currentTime` Seeking.
-* **Mechanism:** Reads the duration of the commercial buffer (`video.duration`) and forces the playhead straight to the final frame (`video.currentTime = video.duration`), causing the player engine to terminate the ad block.
+### 4. Safe Timeline Leap
+* **Technique:** Buffer-Aware Media Timeline Seeking.
+* **Mechanism:** Checks `video.readyState >= 1` before leaping to `video.duration`, preventing out-of-range seek anomalies from being flagged by YouTube's watchdog telemetry.
 
-### 5. Declarative Banner & Promo Suppression
-* **Technique:** CSS-in-JS Slot Cleansing.
-* **Mechanism:** Hides companion banners, rich item promotional cards, and sponsored overlay containers via optimized declarative CSS rules (`content.css`).
+### 5. Stealth Banner Suppression
+* **Technique:** Geometric Non-Destructive Hiding.
+* **Mechanism:** Uses `opacity: 0`, `pointer-events: none`, and `clip-path` instead of `display: none` on honeypot elements to avoid triggering JavaScript-based layout inspection traps (`offsetHeight === 0`).
 
 ## Project Structure
 
@@ -75,11 +71,11 @@ yt-paddy/
 │   ├── background/
 │   │   └── background.js    # Service worker (Badge counter, telemetry, storage init)
 │   ├── content/
-│   │   ├── content.js       # Core DOM & Media API automation engine
-│   │   └── content.css      # Declarative banner suppression styles
+│   │   ├── content.js       # Stealth DOM & Media API automation engine
+│   │   └── content.css      # Non-destructive stealth suppression styles
 │   └── popup/
-│       ├── popup.html       # Glassmorphism dark-theme control hub
-│       ├── popup.css        # Modern UI styling & custom toggles
+│       ├── popup.html       # Modern dark-theme control hub with stealth toggles
+│       ├── popup.css        # Clean UI styling & custom toggles
 │       └── popup.js         # Settings synchronization & stats telemetry
 └── README.md                # Project documentation
 ```
@@ -93,7 +89,7 @@ yt-paddy/
    - Toggle the **Developer mode** switch in the top right corner.
 3. **Load the Extension**:
    - Click the **Load unpacked** button in the top left.
-   - Select this folder: `......`
+   - Select this folder (`yt-paddy`).
 4. **Test on YouTube**:
    - Open [YouTube](https://www.youtube.com/) and play any video.
    - Click the **YouTube-Paddy** icon in your browser toolbar to toggle individual features and inspect real-time analytics (Ads Skipped & Time Saved).
@@ -103,12 +99,13 @@ yt-paddy/
 | Feature | Default | Description |
 | :--- | :---: | :--- |
 | **Engine State** | `ON` | Master switch for all automation features |
-| **Auto-Skip Action** | `ON` | Automatically triggers the "Skip Ad" button |
+| **Stealth Mode (Anti-Detection)** | `ON` | Auto-dismisses enforcement warnings & prevents adblock detection |
+| **Stealth Auto-Skip** | `ON` | Simulates humanized clicks on "Skip Ad" buttons |
 | **Ad-Muting Trigger** | `ON` | Silences commercials and restores volume afterwards |
 | **Playback Acceleration** | `ON` | Speeds up unskippable ads at 16x |
-| **Timeline Time-Jumping**| `ON` | Leaps playback head straight to the final frame |
-| **Banner Suppression** | `ON` | Suppresses static feed banners and companion ads |
+| **Safe Timeline Leap**| `ON` | Safely advances playhead to final frame without telemetry trips |
+| **Stealth Banner Suppression** | `ON` | Masks overlay banners without triggering honeypot detectors |
 
 ## Educational Disclaimer
 
-*This project is developed strictly for **educational, academic, and research purposes** to demonstrate client-side DOM mutation handling, synthetic event propagation and the HTML5 Media APIs in modern browser extension environments.*
+*This project is developed strictly for **educational, academic, and research purposes** to demonstrate client-side DOM mutation handling, stealth synthetic event propagation and the HTML5 Media APIs in modern browser extension environments.*

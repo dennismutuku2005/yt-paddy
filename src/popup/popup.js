@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * YouTube-Paddy (Educational Concept) — Popup Hub Controller
+ * YouTube-Paddy — Popup Hub Controller
  * ============================================================================
  * 
  * Client script for popup.html:
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   const toggles = {
     enabled: document.getElementById('enabledToggle'),
+    stealthMode: document.getElementById('stealthModeToggle'),
     autoSkip: document.getElementById('autoSkipToggle'),
     autoMute: document.getElementById('autoMuteToggle'),
     playbackSpeed: document.getElementById('playbackSpeedToggle'),
@@ -29,13 +30,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     hideBanners: document.getElementById('hideBannersToggle')
   };
 
+  const adsSkippedVal = document.getElementById('adsSkippedVal');
+  const timeSavedVal = document.getElementById('timeSavedVal');
+  const resetStatsBtn = document.getElementById('resetStatsBtn');
+
   const versionText = document.getElementById('versionText');
   const manifest = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest) 
     ? chrome.runtime.getManifest() 
-    : { version: '1.1.1' };
+    : { version: '1.2.0' };
 
   if (versionText) {
-    versionText.textContent = `v${manifest.version} • Automation Engine`;
+    versionText.textContent = `v${manifest.version} • Stealth Automation`;
   }
 
   /**
